@@ -3,277 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Propostas Comerciais</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <title>Sistema de Comissões - SP Data</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #2ecc71;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
         body {
-            background-color: #f1f8e9;
+            background-color: #f5f7fa;
             color: #333;
-            line-height: 1.4;
-            padding: 15px;
+            line-height: 1.6;
         }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        h1 {
-            color: #128C7E;
-            font-size: 24px;
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #128C7E;
-            padding-bottom: 10px;
-        }
-        .tab {
-            padding: 10px 20px;
-            background: #e0f2e9;
-            border-radius: 5px 5px 0 0;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .tab.active {
-            background: #128C7E;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .form-container, .preview-container, .history-container {
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-        .history-container {
-            grid-column: 1 / -1;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #075E54;
-            font-size: 14px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        button {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #128C7E;
-        }
-        .btn-ia {
-            background: #7E57C2;
-            margin-top: 10px;
-        }
-        .btn-ia:hover {
-            background: #5E35B1;
-        }
-        .btn-secondary {
-            background: #78909C;
-        }
-        .btn-secondary:hover {
-            background: #546E7A;
-        }
-        .preview-header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .preview-logo {
-            width: 120px;
-            height: 80px;
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .preview-logo img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .preview-title {
-            color: #128C7E;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-        .preview-content {
-            font-size: 12px;
-        }
-        .preview-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            font-size: 11px;
-        }
-        .preview-table th {
-            background: #128C7E;
-            color: white;
-            text-align: left;
-            padding: 8px;
-            font-size: 12px;
-        }
-        .preview-table td {
-            padding: 6px 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        .actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .history-list {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-        .history-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .history-item:hover {
-            background: #f1f8e9;
-        }
-        .history-client {
-            font-weight: 600;
-            color: #128C7E;
-        }
-        .history-date {
-            font-size: 12px;
-            color: #78909C;
-        }
-        .history-values {
-            font-size: 12px;
-            margin-top: 5px;
         }
         
-        .editor-toolbar {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            padding: 8px;
-            background: #f5f5f5;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .editor-btn {
-            padding: 6px 10px;
-            background: #ffffff;
-            border: 1px solid #cccccc;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            color: #333333;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .editor-btn:hover {
-            background: #e9e9e9;
-            border-color: #999999;
-        }
-        .editor-btn.active {
-            background: #128C7E;
+        header {
+            background-color: var(--primary-color);
             color: white;
-            border-color: #128C7E;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
         }
-        .editor-select {
-            padding: 6px 8px;
-            background: #ffffff;
-            border: 1px solid #cccccc;
-            border-radius: 3px;
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
-            color: #333333;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .result-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+        
+        .result-detail {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: #666;
+        }
+        
+        .explanation {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .explanation h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .rules-list {
+            list-style-type: none;
+        }
+        
+        .rules-list li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .rules-list li:before {
+            content: "•";
+            color: var(--secondary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .highlight {
+            background-color: rgba(46, 204, 113, 0.1);
             font-weight: 600;
         }
-        #commercialNotes {
-            min-height: 100px;
-            font-family: Arial, sans-serif;
-            line-height: 1.4;
+        
+        .commission-details {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
-        #commercialNotes ul, #commercialNotes ol {
-            padding-left: 20px;
-            margin: 5px 0;
+        
+        .detail-card {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
         }
-        #commercialNotes li {
-            margin-bottom: 2px;
+        
+        .detail-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-color);
         }
-
-        /* ESTILOS PARA IMPRESSÃO DIRETA */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .preview-container, .preview-container * {
-                visibility: visible;
-            }
-            .preview-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-                box-shadow: none;
-                background: white;
-            }
-            .actions, header, .tabs, .form-container {
-                display: none !important;
-            }
-            .preview-logo img {
-                max-width: 100px;
-                max-height: 60px;
-            }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
         }
-
-        @media (max-width: 900px) {
-            .tab-content.active {
+        
+        .breakdown-item:not(:last-child) {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .breakdown-total {
+            font-weight: 600;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid var(--light-color);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .gerente-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .gerente-card {
+            background-color: #f0f7ff;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border: 1px solid #d1e3f8;
+        }
+        
+        .gerente-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .commission-details, .gerente-details {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px 10px;
             }
         }
     </style>
@@ -281,469 +299,363 @@
 <body>
     <div class="container">
         <header>
-            <h1>Gerador de Propostas Comerciais</h1>
-            <div>
-                <button class="btn-secondary" onclick="showTab('history')">Histórico de Propostas</button>
-            </div>
+            <h1>Sistema de Comissões - SP Data</h1>
+            <p class="subtitle">Cálculo de comissões para gerentes e executivos</p>
         </header>
-        <div class="tabs">
-            <div class="tab active" onclick="showTab('generator')">Gerar Proposta</div>
-            <div class="tab" onclick="showTab('history')">Histórico</div>
-        </div>
-        <div id="generator" class="tab-content active">
-            <div class="form-container">
+        
+        <div class="card">
+            <h2>Dados de Vendas</h2>
+            <div class="form-grid">
                 <div class="form-group">
-                    <label for="clientName">Nome do Cliente</label>
-                    <input type="text" id="clientName" placeholder="Ex: Instituto Paranaense de Saúde" value="Instituto Paranaense de Saúde Nossa Senhora de Fátima">
-                </div>
-                <div class="form-group">
-                    <label for="clientCity">Cidade/Estado do Cliente</label>
-                    <input type="text" id="clientCity" placeholder="Ex: Jandaia do Sul - PR" value="Jandaia do Sul - PR">
-                </div>
-                <div class="form-group">
-                    <label for="licensePrice">Preço da Licença (por conexão)</label>
-                    <input type="number" id="licensePrice" value="350">
-                </div>
-                <div class="form-group">
-                    <label for="numConnections">Número de Conexões Contratadas</label>
-                    <input type="number" id="numConnections" value="1" min="1">
-                </div>
-                <div class="form-group">
-                    <label for="integrationPrice">Preço da Integração</label>
-                    <input type="number" id="integrationPrice" value="200">
-                </div>
-                <div class="form-group">
-                    <label for="researchPrice">Preço da Pesquisa de Satisfação</label>
-                    <input type="number" id="researchPrice" value="200">
-                </div>
-                <div class="form-group">
-                    <label for="implementationPrice">Preço da Implantação</label>
-                    <input type="number" id="implementationPrice" value="950">
-                </div>
-                <div class="form-group">
-                    <label for="additionalConnections">Preço de Conexões Adicionais</label>
-                    <input type="number" id="additionalConnections" value="100">
+                    <label for="trimestre">Trimestre</label>
+                    <select id="trimestre">
+                        <option value="T1">T1</option>
+                        <option value="T2">T2</option>
+                        <option value="T3">T3</option>
+                        <option value="T4">T4</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="commercialNotes">Observações Comerciais (Detalhes da Negociação)</label>
-                    <div class="editor-toolbar">
-                        <button type="button" class="editor-btn" onclick="formatText('bold')" title="Negrito"><b>B</b></button>
-                        <button type="button" class="editor-btn" onclick="formatText('italic')" title="Itálico"><i>I</i></button>
-                        <button type="button" class="editor-btn" onclick="formatText('underline')" title="Sublinhado"><u>S</u></button>
-                        <button type="button" class="editor-btn" onclick="formatText('insertUnorderedList')" title="Lista">•</button>
-                        <button type="button" class="editor-btn" onclick="formatText('insertOrderedList')" title="Lista numerada">1.</button>
-                    </div>
-                    <div id="commercialNotes" contenteditable="true" style="border: 1px solid #ddd; padding: 10px; border-radius: 4px; min-height: 100px; background: white;">Ex: Valores API Oficial Whatsapp:
-Utility (Exames, Confirmações) - R$0,13
-Marketing (Aniversário, Campanhas): R$0,99</div>
+                    <label for="meta">Meta do Trimestre (R$)</label>
+                    <input type="number" id="meta" value="375000" min="0">
                 </div>
                 
-                <button onclick="updatePreview()">Gerar Proposta</button>
-                <button class="btn-ia" onclick="improveWithAI()">Melhorar com IA</button>
+                <div class="form-group">
+                    <label for="vendasG1">Vendas Gerente 1 (R$)</label>
+                    <input type="number" id="vendasG1" value="210680" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="vendasG2">Vendas Gerente 2 (R$)</label>
+                    <input type="number" id="vendasG2" value="701775" min="0">
+                </div>
             </div>
             
-            <!-- CONTAINER DE PREVIEW QUE SERÁ USADO PARA PDF -->
-            <div class="preview-container" id="pdf-preview">
-                <div class="preview-header">
-                    <div class="preview-logo">
-                        <img src="am2logo5.jpg" alt="Logo AM2 Saúde" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <div style="display: none; color: #128C7E; font-weight: bold; text-align: center; padding: 10px;">
-                            LOGO<br>AM2<br>SAÚDE
-                        </div>
-                    </div>
-                    <div class="preview-title">Sistema de Multiatendentes WhatsApp</div>
-                    <div style="font-size: 11px;">Solução completa para atendimento simultâneo</div>
+            <button id="calcular">Calcular Comissões</button>
+        </div>
+        
+        <div class="card">
+            <h2>Resultados</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-title">Comissão Gerente 1</div>
+                    <div class="result-value" id="comissaoG1">R$ 0,00</div>
+                    <div id="percentualG1">0%</div>
                 </div>
-                <div class="preview-content">
-                    <h2 style="font-size: 16px; color: #128C7E; margin: 10px 0; border-bottom: 1px solid #25D366; padding-bottom: 4px;">PROPOSTA COMERCIAL</h2>
-                    <div style="background: #f1f8e9; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 11px;">
-                        <p><strong>Destinatário:</strong> <span id="preview-client">Instituto Paranaense de Saúde Nossa Senhora de Fátima - Jandaia do Sul - PR</span></p>
-                        <p><strong>Data:</strong> <span id="current-date"></span> | <strong>Validade:</strong> <span id="expiry-date"></span></p>
+                
+                <div class="result-card">
+                    <div class="result-title">Comissão Gerente 2</div>
+                    <div class="result-value" id="comissaoG2">R$ 0,00</div>
+                    <div id="percentualG2">0%</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-title">Comissão Executiva</div>
+                    <div class="result-value" id="comissaoExec">R$ 0,00</div>
+                    <div id="percentualExec">0% (média)</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-title">Comissão SDR</div>
+                    <div class="result-value" id="comissaoSDR">R$ 0,00</div>
+                    <div id="percentualSDR">0% (média)</div>
+                </div>
+            </div>
+            
+            <div class="result-card" style="margin-top: 20px;">
+                <div class="result-title">TOTAL GERAL</div>
+                <div class="result-value" id="totalGeral">R$ 0,00</div>
+            </div>
+            
+            <div class="commission-details">
+                <div class="detail-card">
+                    <div class="detail-title">Detalhamento Executiva</div>
+                    <div class="breakdown-item">
+                        <span>Gerente 1:</span>
+                        <span id="execG1Breakdown">0% = R$ 0,00</span>
                     </div>
-                    <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">1. APRESENTAÇÃO</h3>
-                    <p>Sistema de Multiatendentes WhatsApp para melhorar a eficiência e organização da comunicação com clientes. Atendimento ágil, centralizado e integrado.</p>
-                    <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">2. BENEFÍCIOS</h3>
-                    <ul style="padding-left: 15px; margin: 5px 0; font-size: 11px;">
-                        <li>Atendimento Simultâneo - Múltiplos atendentes</li>
-                        <li>Histórico Centralizado - Todas interações registradas</li>
-                        <li>Distribuição Inteligente - Mensagens automáticas</li>
-                        <li>Pesquisa de Satisfação - NPS integrado</li>
-                        <li>Mensagens Ilimitadas</li>
-                        <li>Usuários Ilimitados</li>
+                    <div class="breakdown-item">
+                        <span>Gerente 2:</span>
+                        <span id="execG2Breakdown">0% = R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-total">
+                        <span>Total Executiva:</span>
+                        <span id="execTotalBreakdown">R$ 0,00</span>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-title">Detalhamento SDR</div>
+                    <div class="breakdown-item">
+                        <span>Gerente 1:</span>
+                        <span id="sdrG1Breakdown">0% = R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Gerente 2:</span>
+                        <span id="sdrG2Breakdown">0% = R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-total">
+                        <span>Total SDR:</span>
+                        <span id="sdrTotalBreakdown">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gerente-details">
+                <div class="gerente-card">
+                    <div class="gerente-title">Gerente 1</div>
+                    <div><strong>Vendas:</strong> <span id="vendasG1Detail">R$ 0,00</span></div>
+                    <div><strong>Comissão:</strong> <span id="comissaoG1Detail">0% = R$ 0,00</span></div>
+                    <div><strong>Executiva:</strong> <span id="execG1Detail">0% = R$ 0,00</span></div>
+                    <div><strong>SDR:</strong> <span id="sdrG1Detail">0% = R$ 0,00</span></div>
+                </div>
+                
+                <div class="gerente-card">
+                    <div class="gerente-title">Gerente 2</div>
+                    <div><strong>Vendas:</strong> <span id="vendasG2Detail">R$ 0,00</span></div>
+                    <div><strong>Comissão:</strong> <span id="comissaoG2Detail">0% = R$ 0,00</span></div>
+                    <div><strong>Executiva:</strong> <span id="execG2Detail">0% = R$ 0,00</span></div>
+                    <div><strong>SDR:</strong> <span id="sdrG2Detail">0% = R$ 0,00</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>Regras de Cálculo</h3>
+            <ul class="rules-list">
+                <li><strong>Valor mínimo para início de pagamento:</strong> R$ 50.000 de venda sobre taxa de implantação</li>
+                <li><strong>Gerentes:</strong> 
+                    <ul class="rules-list">
+                        <li>Se as vendas forem inferiores a R$ 50.000: 0% de comissão</li>
+                        <li>Se as vendas forem iguais ou superiores a R$ 50.000: 5% de comissão sobre as vendas</li>
                     </ul>
-                    <div id="preview-commercial-notes-container" style="display: none; margin: 15px 0;">
-                        <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">4. OBSERVAÇÕES COMERCIAIS</h3>
-                        <div id="preview-commercial-notes" style="background: #fff3e0; padding: 10px; border-left: 4px solid #ff9800; border-radius: 4px; font-style: italic;"></div>
-                    </div>
-                    <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">3. INVESTIMENTO</h3>
-                    <table class="preview-table">
-                        <tr>
-                            <th>Descrição</th>
-                            <th>Valor</th>
-                        </tr>
-                        <tbody id="investmentTableBody">
-                        </tbody>
-                    </table>
-                    <div style="background: #e8f5e9; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 11px;">
-                        <h3 style="font-size: 13px; margin: 5px 0;">INVESTIMENTO TOTAL ESTIMADO</h3>
-                        <p><strong>Exemplo para <span id="preview-num-connections-total">1</span> conexão(ões) + integrações:</strong></p>
-                        <div id="totalBreakdown">
-                        </div>
-                        <p><strong>Total Mensal: R$ <span id="preview-total">750</span>,00 /mês</strong></p>
-                        <p>Implantação: <strong>R$ <span id="preview-total-implementation">950</span>,00 (único)</strong></p>
-                    </div>
-                    <div style="text-align: center; background: #075E54; color: white; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 11px;">
-                        <h3 style="margin: 5px 0; font-size: 13px;">PRONTO PARA OTIMIZAR SEU ATENDIMENTO?</h3>
-                        <p>Entre em contato para agendar uma demonstração</p>
-                        <p><strong>comercial@am2saude.com.br | (45) 9 9990-1802</strong></p>
-                    </div>
-                </div>
-                <div style="text-align: center; padding: 8px; background: #073d36; color: white; border-radius: 0 0 4px 4px; margin: 15px -20px -20px -20px; font-size: 10px;">
-                    <p>Rua Sete de setembro, 2734, sala 21 - Cascavel - PR</p>
-                    <p>© <span id="current-year">2025</span> - Todos os direitos reservados</p>
-                    <p style="font-size: 9px; opacity: 0.7; margin-top: 4px;">v2025.04.03-1430</p>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button onclick="saveProposal()">Salvar Proposta</button>
-                <button onclick="generatePDF()">Imprimir / Gerar PDF</button>
-                <button class="btn-secondary" onclick="clearForm()">Nova Proposta</button>
-                <button class="btn-secondary" onclick="window.print()">Imprimir Direto</button>
-            </div>
+                </li>
+                <li><strong>Executiva de Contas:</strong> Recebe 2% sobre as vendas de cada gerente</li>
+                <li><strong>SDR:</strong> Recebe 1% sobre as vendas de cada gerente</li>
+            </ul>
         </div>
-        <div id="history" class="tab-content">
-            <div class="history-container">
-                <h2>Histórico de Propostas</h2>
-                <p>Clique em uma proposta para visualizar ou recuperar os dados.</p>
-                <div class="history-list" id="historyList">
-                    <p id="emptyHistory">Nenhuma proposta salva ainda.</p>
-                </div>
-                <div class="actions">
-                    <button class="btn-secondary" onclick="clearHistory()">Limpar Histórico</button>
-                    <button onclick="showTab('generator')">Voltar para Gerador</button>
-                </div>
-            </div>
+        
+        <div class="card">
+            <h2>Histórico de Cálculos por Trimestre</h2>
+            <table id="historico">
+                <thead>
+                    <tr>
+                        <th>Trimestre</th>
+                        <th>Meta (R$)</th>
+                        <th>Vendas G1 (R$)</th>
+                        <th>Vendas G2 (R$)</th>
+                        <th>Comissão G1 (R$)</th>
+                        <th>Comissão G2 (R$)</th>
+                        <th>Executiva (R$)</th>
+                        <th>SDR (R$)</th>
+                        <th>Total (R$)</th>
+                    </tr>
+                </thead>
+                <tbody id="historico-body">
+                    <!-- Linhas serão adicionadas dinamicamente -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.querySelector(`.tab:nth-child(${tabId === 'generator' ? 1 : 2})`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-            if (tabId === 'history') {
-                loadHistory();
-            }
-        }
-
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-        function formatDateTime(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `${day}/${month}/${year} ${hours}:${minutes}`;
-        }
-
-        const currentDate = new Date();
-        document.getElementById('current-date').textContent = formatDate(currentDate);
-        const expiryDate = new Date();
-        expiryDate.setDate(currentDate.getDate() + 30);
-        document.getElementById('expiry-date').textContent = formatDate(expiryDate);
-        document.getElementById('current-year').textContent = "2025";
-
-        function formatText(command, value = null) {
-            document.getElementById('commercialNotes').focus();
-            if (value) {
-                document.execCommand(command, false, value);
-            } else {
-                document.execCommand(command, false, null);
-            }
-        }
-
-        function updatePreview(suppressAlert = false) {
-            const clientName = document.getElementById('clientName').value;
-            const clientCity = document.getElementById('clientCity').value;
-            const licensePrice = parseInt(document.getElementById('licensePrice').value);
-            const integrationPrice = parseInt(document.getElementById('integrationPrice').value);
-            const researchPrice = parseInt(document.getElementById('researchPrice').value);
-            const implementationPrice = parseInt(document.getElementById('implementationPrice').value);
-            const additionalConnections = parseInt(document.getElementById('additionalConnections').value);
-            const numConnections = parseInt(document.getElementById('numConnections').value) || 1;
-            const commercialNotes = document.getElementById('commercialNotes').innerHTML.trim();
-
-            let totalLicenseCost = 0;
-            if (numConnections <= 5) {
-                totalLicenseCost = licensePrice * numConnections;
-            } else {
-                totalLicenseCost = (licensePrice * 5) + (additionalConnections * (numConnections - 5));
-            }
-            const totalMonthly = totalLicenseCost + integrationPrice + researchPrice;
+        document.addEventListener('DOMContentLoaded', function() {
+            const calcularBtn = document.getElementById('calcular');
+            const trimestreSelect = document.getElementById('trimestre');
+            const metaInput = document.getElementById('meta');
+            const vendasG1Input = document.getElementById('vendasG1');
+            const vendasG2Input = document.getElementById('vendasG2');
             
-            document.getElementById('preview-client').textContent = `${clientName} - ${clientCity}`;
-            document.getElementById('preview-num-connections-total').textContent = numConnections;
-
-            const tableBody = document.getElementById('investmentTableBody');
-            tableBody.innerHTML = '';
-
-            const licenseRow = document.createElement('tr');
-            licenseRow.innerHTML = `<td>Licença Mensal (por conexão)</td><td>R$ ${licensePrice},00 /mês</td>`;
-            tableBody.appendChild(licenseRow);
-
-            const additionalRow = document.createElement('tr');
-            additionalRow.innerHTML = `<td>Conexões Adicionais (a partir da 6ª)</td><td>R$ ${additionalConnections},00 /mês cada</td>`;
-            tableBody.appendChild(additionalRow);
-
-            if (integrationPrice > 0) {
-                const integrationRow = document.createElement('tr');
-                integrationRow.innerHTML = `<td>Integração com Sistema de Gestão</td><td>R$ ${integrationPrice},00 /mês</td>`;
-                tableBody.appendChild(integrationRow);
-            }
-
-            if (researchPrice > 0) {
-                const researchRow = document.createElement('tr');
-                researchRow.innerHTML = `<td>Pesquisa de Satisfação (NPS)</td><td>R$ ${researchPrice},00 /mês</td>`;
-                tableBody.appendChild(researchRow);
-            }
-
-            if (implementationPrice > 0) {
-                const implementationRow = document.createElement('tr');
-                implementationRow.innerHTML = `<td>Implantação (configuração inicial)</td><td>R$ ${implementationPrice},00 (único)</td>`;
-                tableBody.appendChild(implementationRow);
-            }
-
-            const totalBreakdown = document.getElementById('totalBreakdown');
-            totalBreakdown.innerHTML = '';
-
-            const licenseTotalItem = document.createElement('p');
-            licenseTotalItem.innerHTML = `Licença: <strong>R$ ${totalLicenseCost.toLocaleString('pt-BR')},00 /mês</strong>`;
-            totalBreakdown.appendChild(licenseTotalItem);
-
-            if (integrationPrice > 0) {
-                const integrationTotalItem = document.createElement('p');
-                integrationTotalItem.innerHTML = `Integração: <strong>R$ ${integrationPrice},00 /mês</strong>`;
-                totalBreakdown.appendChild(integrationTotalItem);
-            }
-
-            if (researchPrice > 0) {
-                const researchTotalItem = document.createElement('p');
-                researchTotalItem.innerHTML = `Pesquisa: <strong>R$ ${researchPrice},00 /mês</strong>`;
-                totalBreakdown.appendChild(researchTotalItem);
-            }
-
-            document.getElementById('preview-total').textContent = totalMonthly.toLocaleString('pt-BR');
-            document.getElementById('preview-total-implementation').textContent = implementationPrice;
-
-            const notesContainer = document.getElementById('preview-commercial-notes-container');
-            const notesContent = document.getElementById('preview-commercial-notes');
+            // Elementos de resultado
+            const comissaoG1Elem = document.getElementById('comissaoG1');
+            const comissaoG2Elem = document.getElementById('comissaoG2');
+            const comissaoExecElem = document.getElementById('comissaoExec');
+            const comissaoSDRElem = document.getElementById('comissaoSDR');
+            const totalGeralElem = document.getElementById('totalGeral');
+            const percentualG1Elem = document.getElementById('percentualG1');
+            const percentualG2Elem = document.getElementById('percentualG2');
+            const percentualExecElem = document.getElementById('percentualExec');
+            const percentualSDRElem = document.getElementById('percentualSDR');
             
-            if (commercialNotes && commercialNotes !== 'Ex: Valores API Oficial Whatsapp:<br>Utility (Exames, Confirmações) - R$0,13<br>Marketing (Aniversário, Campanhas): R$0,99') {
-                notesContent.innerHTML = commercialNotes;
-                notesContainer.style.display = 'block';
-            } else {
-                notesContainer.style.display = 'none';
-            }
+            // Elementos de detalhes por gerente
+            const vendasG1DetailElem = document.getElementById('vendasG1Detail');
+            const vendasG2DetailElem = document.getElementById('vendasG2Detail');
+            const comissaoG1DetailElem = document.getElementById('comissaoG1Detail');
+            const comissaoG2DetailElem = document.getElementById('comissaoG2Detail');
+            const execG1DetailElem = document.getElementById('execG1Detail');
+            const execG2DetailElem = document.getElementById('execG2Detail');
+            const sdrG1DetailElem = document.getElementById('sdrG1Detail');
+            const sdrG2DetailElem = document.getElementById('sdrG2Detail');
             
-            if (!suppressAlert) {
-                alert('Proposta atualizada com sucesso!');
-            }
-        }
-
-        function saveProposal() {
-            const clientName = document.getElementById('clientName').value;
-            if (!clientName) {
-                alert('Por favor, informe o nome do cliente antes de salvar.');
-                return;
-            }
-            const now = new Date();
-            const proposal = {
-                id: Date.now(),
-                date: now.toISOString(),
-                displayName: `${clientName} - ${formatDateTime(now)}`,
-                clientName: clientName,
-                clientCity: document.getElementById('clientCity').value,
-                licensePrice: document.getElementById('licensePrice').value,
-                integrationPrice: document.getElementById('integrationPrice').value,
-                researchPrice: document.getElementById('researchPrice').value,
-                implementationPrice: document.getElementById('implementationPrice').value,
-                additionalConnections: document.getElementById('additionalConnections').value,
-                numConnections: document.getElementById('numConnections').value,
-                commercialNotes: document.getElementById('commercialNotes').innerHTML
+            // Elementos de breakdown
+            const execG1BreakdownElem = document.getElementById('execG1Breakdown');
+            const execG2BreakdownElem = document.getElementById('execG2Breakdown');
+            const execTotalBreakdownElem = document.getElementById('execTotalBreakdown');
+            const sdrG1BreakdownElem = document.getElementById('sdrG1Breakdown');
+            const sdrG2BreakdownElem = document.getElementById('sdrG2Breakdown');
+            const sdrTotalBreakdownElem = document.getElementById('sdrTotalBreakdown');
+            
+            const historicoBody = document.getElementById('historico-body');
+            
+            // Objeto para armazenar o histórico por trimestre
+            let historico = {
+                'T1': null,
+                'T2': null,
+                'T3': null,
+                'T4': null
             };
-            let history = JSON.parse(localStorage.getItem('proposalHistory')) || [];
-            history.unshift(proposal);
-            if (history.length > 50) {
-                history = history.slice(0, 50);
+            
+            // Função para formatar valores em reais
+            function formatarReal(valor) {
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(valor);
             }
-            localStorage.setItem('proposalHistory', JSON.stringify(history));
-            alert(`Proposta para ${clientName} salva no histórico!`);
-        }
-
-        function loadHistory() {
-            const historyList = document.getElementById('historyList');
-            const emptyHistory = document.getElementById('emptyHistory');
-            const history = JSON.parse(localStorage.getItem('proposalHistory')) || [];
-            historyList.innerHTML = '';
-            if (history.length === 0) {
-                emptyHistory.style.display = 'block';
-                return;
-            }
-            emptyHistory.style.display = 'none';
-            history.forEach(proposal => {
-                const licensePrice = parseInt(proposal.licensePrice);
-                const additionalConnections = parseInt(proposal.additionalConnections);
-                const numConnections = parseInt(proposal.numConnections) || 1;
-                let totalLicenseCost = 0;
-                if (numConnections <= 5) {
-                    totalLicenseCost = licensePrice * numConnections;
+            
+            // Função para calcular comissão do gerente (agora fixo em 5% acima de 50.000)
+            function calcularComissaoGerente(vendas) {
+                if (vendas < 50000) {
+                    return { percentual: 0, valor: 0 };
                 } else {
-                    totalLicenseCost = (licensePrice * 5) + (additionalConnections * (numConnections - 5));
+                    return { percentual: 5, valor: vendas * 0.05 };
                 }
-                const total = totalLicenseCost + parseInt(proposal.integrationPrice) + parseInt(proposal.researchPrice);
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                item.innerHTML = `
-                    <div class="history-client">${proposal.displayName}</div>
-                    <div class="history-values">Total: R$ ${total},00/mês + R$ ${proposal.implementationPrice},00 (implantação)</div>
-                `;
-                item.addEventListener('click', () => {
-                    if (confirm('Deseja carregar esta proposta?')) {
-                        loadProposal(proposal);
-                        showTab('generator');
-                    }
-                });
-                historyList.appendChild(item);
-            });
-        }
-
-        function loadProposal(proposal) {
-            document.getElementById('clientName').value = proposal.clientName;
-            document.getElementById('clientCity').value = proposal.clientCity;
-            document.getElementById('licensePrice').value = proposal.licensePrice;
-            document.getElementById('integrationPrice').value = proposal.integrationPrice;
-            document.getElementById('researchPrice').value = proposal.researchPrice;
-            document.getElementById('implementationPrice').value = proposal.implementationPrice;
-            document.getElementById('additionalConnections').value = proposal.additionalConnections;
-            document.getElementById('numConnections').value = proposal.numConnections || 1;
-            document.getElementById('commercialNotes').innerHTML = proposal.commercialNotes || 'Ex: Valores API Oficial Whatsapp:<br>Utility (Exames, Confirmações) - R$0,13<br>Marketing (Aniversário, Campanhas): R$0,99';
-            updatePreview();
-        }
-
-        function clearHistory() {
-            if (confirm('Tem certeza que deseja limpar todo o histórico?')) {
-                localStorage.removeItem('proposalHistory');
-                loadHistory();
             }
-        }
-
-        function clearForm() {
-            if (confirm('Deseja criar uma nova proposta? Os dados atuais serão perdidos.')) {
-                document.getElementById('clientName').value = '';
-                document.getElementById('clientCity').value = '';
-                document.getElementById('licensePrice').value = '350';
-                document.getElementById('numConnections').value = '1';
-                document.getElementById('integrationPrice').value = '200';
-                document.getElementById('researchPrice').value = '200';
-                document.getElementById('implementationPrice').value = '950';
-                document.getElementById('additionalConnections').value = '100';
-                document.getElementById('commercialNotes').innerHTML = 'Ex: Valores API Oficial Whatsapp:<br>Utility (Exames, Confirmações) - R$0,13<br>Marketing (Aniversário, Campanhas): R$0,99';
-                updatePreview(true);
-            }
-        }
-
-        function improveWithAI() {
-            alert('Recurso de IA em desenvolvimento.');
-            document.getElementById('clientName').value = "Instituto Paranaense de Saúde Nossa Senhora de Fátima - " + 
-                document.getElementById('clientName').value;
-            updatePreview();
-        }
-
-        function generatePDF() {
-            const clientName = document.getElementById('clientName').value;
-            const element = document.getElementById('pdf-preview');
             
-            // Configurações otimizadas para A4
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: `Proposta_${clientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_${formatDate(currentDate).replace(/\//g, '-')}.pdf`,
-                image: { 
-                    type: 'jpeg', 
-                    quality: 0.98 
-                },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    width: 800,
-                    windowWidth: 800
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: { mode: 'avoid-all' }
-            };
-
-            // Adicionar estilos específicos para PDF
-            const originalStyles = element.getAttribute('style') || '';
-            element.style.width = '190mm';
-            element.style.margin = '0 auto';
-            element.style.padding = '10mm';
-            element.style.boxSizing = 'border-box';
-            element.style.fontSize = '11px';
-            element.style.lineHeight = '1.2';
-
-            alert('Gerando PDF... Aguarde alguns segundos.');
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restaurar estilos originais
-                element.setAttribute('style', originalStyles);
-            }).catch(error => {
-                console.error('Erro ao gerar PDF:', error);
-                alert('Erro ao gerar PDF. Tente usar a opção "Imprimir Direto".');
-                element.setAttribute('style', originalStyles);
-            });
-        }
-
-        // Verificar se o logo carrega corretamente
-        window.addEventListener('load', function() {
-            const logo = document.querySelector('.preview-logo img');
-            if (logo) {
-                logo.onerror = function() {
-                    this.style.display = 'none';
-                    const fallback = this.nextElementSibling;
-                    if (fallback) {
-                        fallback.style.display = 'block';
+            // Função para calcular comissão da executiva e SDR (agora fixo)
+            function calcularComissaoEquipe(vendas) {
+                if (vendas < 50000) {
+                    return { percentualExec: 0, valorExec: 0, percentualSDR: 0, valorSDR: 0 };
+                } else {
+                    return { 
+                        percentualExec: 2, 
+                        valorExec: vendas * 0.02, 
+                        percentualSDR: 1, 
+                        valorSDR: vendas * 0.01 
+                    };
+                }
+            }
+            
+            // Função para atualizar o histórico na tabela
+            function atualizarHistoricoTabela() {
+                // Limpar a tabela
+                historicoBody.innerHTML = '';
+                
+                // Adicionar cada trimestre ao histórico
+                for (const trimestre in historico) {
+                    if (historico[trimestre]) {
+                        const dados = historico[trimestre];
+                        const novaLinha = document.createElement('tr');
+                        
+                        // Destacar a linha se for o trimestre atual
+                        if (trimestre === trimestreSelect.value) {
+                            novaLinha.classList.add('highlight');
+                        }
+                        
+                        novaLinha.innerHTML = `
+                            <td>${trimestre}</td>
+                            <td>${formatarReal(dados.meta)}</td>
+                            <td>${formatarReal(dados.vendasG1)}</td>
+                            <td>${formatarReal(dados.vendasG2)}</td>
+                            <td>${formatarReal(dados.comissaoG1)}</td>
+                            <td>${formatarReal(dados.comissaoG2)}</td>
+                            <td>${formatarReal(dados.comissaoExec)}</td>
+                            <td>${formatarReal(dados.comissaoSDR)}</td>
+                            <td>${formatarReal(dados.total)}</td>
+                        `;
+                        
+                        historicoBody.appendChild(novaLinha);
                     }
+                }
+            }
+            
+            // Função principal de cálculo
+            function calcularComissoes() {
+                const trimestre = trimestreSelect.value;
+                const meta = parseFloat(metaInput.value) || 0;
+                const vendasG1 = parseFloat(vendasG1Input.value) || 0;
+                const vendasG2 = parseFloat(vendasG2Input.value) || 0;
+                
+                // Calcular comissões dos gerentes (agora fixo em 5% acima de 50.000)
+                const comissaoG1 = calcularComissaoGerente(vendasG1);
+                const comissaoG2 = calcularComissaoGerente(vendasG2);
+                
+                // Calcular comissões da executiva e SDR para cada gerente (agora fixo)
+                const comissaoEquipeG1 = calcularComissaoEquipe(vendasG1);
+                const comissaoEquipeG2 = calcularComissaoEquipe(vendasG2);
+                
+                // Calcular totais da executiva e SDR
+                const comissaoExec = comissaoEquipeG1.valorExec + comissaoEquipeG2.valorExec;
+                const comissaoSDR = comissaoEquipeG1.valorSDR + comissaoEquipeG2.valorSDR;
+                
+                // Calcular total geral
+                const totalGeral = comissaoG1.valor + comissaoG2.valor + comissaoExec + comissaoSDR;
+                
+                // Calcular percentuais médios para executiva e SDR
+                const totalVendas = vendasG1 + vendasG2;
+                const percentualExec = totalVendas > 0 ? (comissaoExec / totalVendas * 100).toFixed(2) : 0;
+                const percentualSDR = totalVendas > 0 ? (comissaoSDR / totalVendas * 100).toFixed(2) : 0;
+                
+                // Atualizar a interface principal
+                comissaoG1Elem.textContent = formatarReal(comissaoG1.valor);
+                comissaoG2Elem.textContent = formatarReal(comissaoG2.valor);
+                comissaoExecElem.textContent = formatarReal(comissaoExec);
+                comissaoSDRElem.textContent = formatarReal(comissaoSDR);
+                totalGeralElem.textContent = formatarReal(totalGeral);
+                percentualG1Elem.textContent = `${comissaoG1.percentual}%`;
+                percentualG2Elem.textContent = `${comissaoG2.percentual}%`;
+                percentualExecElem.textContent = `${percentualExec}% (média)`;
+                percentualSDRElem.textContent = `${percentualSDR}% (média)`;
+                
+                // Atualizar detalhes por gerente
+                vendasG1DetailElem.textContent = formatarReal(vendasG1);
+                vendasG2DetailElem.textContent = formatarReal(vendasG2);
+                
+                comissaoG1DetailElem.textContent = `${comissaoG1.percentual}% = ${formatarReal(comissaoG1.valor)}`;
+                comissaoG2DetailElem.textContent = `${comissaoG2.percentual}% = ${formatarReal(comissaoG2.valor)}`;
+                
+                execG1DetailElem.textContent = `${comissaoEquipeG1.percentualExec}% = ${formatarReal(comissaoEquipeG1.valorExec)}`;
+                execG2DetailElem.textContent = `${comissaoEquipeG2.percentualExec}% = ${formatarReal(comissaoEquipeG2.valorExec)}`;
+                
+                sdrG1DetailElem.textContent = `${comissaoEquipeG1.percentualSDR}% = ${formatarReal(comissaoEquipeG1.valorSDR)}`;
+                sdrG2DetailElem.textContent = `${comissaoEquipeG2.percentualSDR}% = ${formatarReal(comissaoEquipeG2.valorSDR)}`;
+                
+                // Atualizar breakdown da executiva e SDR
+                execG1BreakdownElem.textContent = `${comissaoEquipeG1.percentualExec}% = ${formatarReal(comissaoEquipeG1.valorExec)}`;
+                execG2BreakdownElem.textContent = `${comissaoEquipeG2.percentualExec}% = ${formatarReal(comissaoEquipeG2.valorExec)}`;
+                execTotalBreakdownElem.textContent = formatarReal(comissaoExec);
+                
+                sdrG1BreakdownElem.textContent = `${comissaoEquipeG1.percentualSDR}% = ${formatarReal(comissaoEquipeG1.valorSDR)}`;
+                sdrG2BreakdownElem.textContent = `${comissaoEquipeG2.percentualSDR}% = ${formatarReal(comissaoEquipeG2.valorSDR)}`;
+                sdrTotalBreakdownElem.textContent = formatarReal(comissaoSDR);
+                
+                // Atualizar o histórico
+                historico[trimestre] = {
+                    meta: meta,
+                    vendasG1: vendasG1,
+                    vendasG2: vendasG2,
+                    comissaoG1: comissaoG1.valor,
+                    comissaoG2: comissaoG2.valor,
+                    comissaoExec: comissaoExec,
+                    comissaoSDR: comissaoSDR,
+                    total: totalGeral
                 };
                 
-                // Verificar se a imagem carregou
-                if (logo.complete && logo.naturalHeight === 0) {
-                    logo.style.display = 'none';
-                    const fallback = logo.nextElementSibling;
-                    if (fallback) {
-                        fallback.style.display = 'block';
-                    }
-                }
+                // Atualizar a tabela de histórico
+                atualizarHistoricoTabela();
             }
             
-            updatePreview(true);
+            // Event listener para o botão de calcular
+            calcularBtn.addEventListener('click', calcularComissoes);
+            
+            // Calcular automaticamente quando os dados mudarem
+            [metaInput, vendasG1Input, vendasG2Input].forEach(input => {
+                input.addEventListener('input', calcularComissoes);
+            });
+            
+            // Calcular comissões ao carregar a página
+            calcularComissoes();
         });
     </script>
 </body>
