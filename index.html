@@ -42,6 +42,7 @@
             border-radius: var(--border-radius);
             margin-bottom: 30px;
             box-shadow: var(--box-shadow);
+            position: relative;
         }
         
         h1 {
@@ -101,6 +102,13 @@
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
         
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
         button {
             background-color: var(--secondary-color);
             color: white;
@@ -111,11 +119,26 @@
             font-size: 1rem;
             font-weight: 600;
             transition: background-color 0.3s;
-            margin-top: 10px;
         }
         
         button:hover {
             background-color: #2980b9;
+        }
+        
+        #btnImprimir {
+            background-color: #27ae60;
+        }
+        
+        #btnImprimir:hover {
+            background-color: #219653;
+        }
+        
+        #btnCompartilhar {
+            background-color: #9b59b6;
+        }
+        
+        #btnCompartilhar:hover {
+            background-color: #8e44ad;
         }
         
         .results-grid {
@@ -182,30 +205,138 @@
             left: 0;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        /* NOVO LAYOUT PARA HISTÓRICO - CARDS */
+        .historico-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
             margin-top: 20px;
         }
         
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .trimestre-card {
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        th {
-            background-color: var(--primary-color);
-            color: white;
+        .trimestre-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
         
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .trimestre-card.current {
+            border-left: 4px solid var(--success-color);
+            background-color: #f8fff8;
         }
         
-        .highlight {
-            background-color: rgba(46, 204, 113, 0.1);
+        .trimestre-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .trimestre-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .trimestre-meta {
+            font-size: 0.9rem;
+            color: #666;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .vendas-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .gerente-vendas {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .gerente-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .gerente-value {
+            font-size: 1.1rem;
             font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .comissao-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .comissao-item {
+            text-align: center;
+            padding: 10px;
+            background: #f0f7ff;
+            border-radius: 6px;
+        }
+        
+        .comissao-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .comissao-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+        
+        .total-card {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .total-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .total-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .empty-history {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .empty-history i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
         
         .commission-details {
@@ -269,6 +400,173 @@
             text-align: center;
         }
         
+        .confidential {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            color: #856404;
+            font-weight: 600;
+        }
+        
+        .print-only {
+            display: none;
+        }
+        
+        /* Estilos para impressão */
+        @media print {
+            @page {
+                size: A4;
+                margin: 1.5cm;
+            }
+            
+            body {
+                background-color: white !important;
+                font-size: 11pt;
+                line-height: 1.3;
+                color: black !important;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .container {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+            
+            header {
+                background-color: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border-bottom: 3px solid #2c3e50;
+                margin-bottom: 20px;
+                padding: 15px 0 !important;
+            }
+            
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                margin-bottom: 15px !important;
+                page-break-inside: avoid;
+                padding: 15px !important;
+            }
+            
+            .button-group, button, .confidential, .explanation, 
+            .gerente-details, .commission-details, .form-grid {
+                display: none !important;
+            }
+            
+            .print-only {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 10px;
+                font-size: 9pt;
+                color: #666;
+            }
+            
+            .print-header {
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #2c3e50;
+                padding-bottom: 10px;
+            }
+            
+            .print-header h1 {
+                font-size: 18pt;
+                margin-bottom: 5px;
+                color: #2c3e50;
+            }
+            
+            .print-header .subtitle {
+                font-size: 11pt;
+                color: #666;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+                margin-top: 15px !important;
+            }
+            
+            .result-card {
+                padding: 10px !important;
+                border: 1px solid #ddd !important;
+                background-color: white !important;
+            }
+            
+            .result-title {
+                font-size: 10pt !important;
+                margin-bottom: 5px !important;
+            }
+            
+            .result-value {
+                font-size: 14pt !important;
+                color: #2c3e50 !important;
+            }
+            
+            .result-detail {
+                font-size: 9pt !important;
+            }
+            
+            .print-summary {
+                margin-top: 20px;
+                padding: 15px;
+                border: 1px solid #ddd;
+                background-color: #f8f9fa;
+            }
+            
+            .print-summary h3 {
+                font-size: 12pt;
+                margin-bottom: 10px;
+                color: #2c3e50;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 5px;
+            }
+            
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 5px;
+                font-size: 10pt;
+            }
+            
+            .summary-total {
+                font-weight: bold;
+                border-top: 2px solid #2c3e50;
+                padding-top: 8px;
+                margin-top: 8px;
+                font-size: 11pt;
+            }
+            
+            /* Histórico na impressão */
+            .historico-cards {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            
+            .trimestre-card {
+                page-break-inside: avoid;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            h2 {
+                font-size: 13pt !important;
+                color: #2c3e50 !important;
+                border-bottom: 1px solid #ddd !important;
+            }
+            
+            /* Garantir que não haja quebras indesejadas */
+            .card:last-child {
+                page-break-before: auto;
+            }
+        }
+        
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -282,16 +580,20 @@
                 grid-template-columns: 1fr;
             }
             
+            .historico-cards {
+                grid-template-columns: 1fr;
+            }
+            
             h1 {
                 font-size: 1.8rem;
             }
             
-            table {
-                font-size: 0.8rem;
+            .button-group {
+                flex-direction: column;
             }
             
-            th, td {
-                padding: 8px 10px;
+            button {
+                width: 100%;
             }
         }
     </style>
@@ -301,6 +603,9 @@
         <header>
             <h1>Sistema de Comissões - SP Data</h1>
             <p class="subtitle">Cálculo de comissões para gerentes e executivos</p>
+            <div class="print-only">
+                Relatório Gerado em: <span id="dataRelatorio"></span>
+            </div>
         </header>
         
         <div class="card">
@@ -332,7 +637,11 @@
                 </div>
             </div>
             
-            <button id="calcular">Calcular Comissões</button>
+            <div class="button-group">
+                <button id="calcular">Calcular Comissões</button>
+                <button id="btnImprimir">🖨️ Imprimir Relatório</button>
+                <button id="btnCompartilhar">📤 Compartilhar</button>
+            </div>
         </div>
         
         <div class="card">
@@ -366,6 +675,43 @@
             <div class="result-card" style="margin-top: 20px;">
                 <div class="result-title">TOTAL GERAL</div>
                 <div class="result-value" id="totalGeral">R$ 0,00</div>
+            </div>
+            
+            <!-- Área de impressão resumida -->
+            <div class="print-summary" style="display: none;">
+                <h3>Resumo das Comissões</h3>
+                <div class="summary-item">
+                    <span>Trimestre:</span>
+                    <span id="printTrimestre">T1</span>
+                </div>
+                <div class="summary-item">
+                    <span>Meta do Trimestre:</span>
+                    <span id="printMeta">R$ 375.000,00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Total de Vendas:</span>
+                    <span id="printTotalVendas">R$ 0,00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Gerente 1:</span>
+                    <span id="printG1">R$ 0,00 (0%)</span>
+                </div>
+                <div class="summary-item">
+                    <span>Gerente 2:</span>
+                    <span id="printG2">R$ 0,00 (0%)</span>
+                </div>
+                <div class="summary-item">
+                    <span>Executiva:</span>
+                    <span id="printExec">R$ 0,00</span>
+                </div>
+                <div class="summary-item">
+                    <span>SDR:</span>
+                    <span id="printSDR">R$ 0,00</span>
+                </div>
+                <div class="summary-item summary-total">
+                    <span>TOTAL GERAL:</span>
+                    <span id="printTotalGeral">R$ 0,00</span>
+                </div>
             </div>
             
             <div class="commission-details">
@@ -419,6 +765,10 @@
                     <div><strong>SDR:</strong> <span id="sdrG2Detail">0% = R$ 0,00</span></div>
                 </div>
             </div>
+            
+            <div class="confidential">
+                🔒 Dados armazenados localmente - Informações Confidenciais
+            </div>
         </div>
         
         <div class="explanation">
@@ -438,34 +788,27 @@
         
         <div class="card">
             <h2>Histórico de Cálculos por Trimestre</h2>
-            <table id="historico">
-                <thead>
-                    <tr>
-                        <th>Trimestre</th>
-                        <th>Meta (R$)</th>
-                        <th>Vendas G1 (R$)</th>
-                        <th>Vendas G2 (R$)</th>
-                        <th>Comissão G1 (R$)</th>
-                        <th>Comissão G2 (R$)</th>
-                        <th>Executiva (R$)</th>
-                        <th>SDR (R$)</th>
-                        <th>Total (R$)</th>
-                    </tr>
-                </thead>
-                <tbody id="historico-body">
-                    <!-- Linhas serão adicionadas dinamicamente -->
-                </tbody>
-            </table>
+            <div id="historico-cards" class="historico-cards">
+                <div class="empty-history">
+                    <div>📊</div>
+                    <p>Nenhum cálculo realizado ainda</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px;">Os cálculos aparecerão aqui automaticamente</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calcularBtn = document.getElementById('calcular');
+            const btnImprimir = document.getElementById('btnImprimir');
+            const btnCompartilhar = document.getElementById('btnCompartilhar');
             const trimestreSelect = document.getElementById('trimestre');
             const metaInput = document.getElementById('meta');
             const vendasG1Input = document.getElementById('vendasG1');
             const vendasG2Input = document.getElementById('vendasG2');
+            const dataRelatorioElem = document.getElementById('dataRelatorio');
+            const historicoCards = document.getElementById('historico-cards');
             
             // Elementos de resultado
             const comissaoG1Elem = document.getElementById('comissaoG1');
@@ -477,6 +820,16 @@
             const percentualG2Elem = document.getElementById('percentualG2');
             const percentualExecElem = document.getElementById('percentualExec');
             const percentualSDRElem = document.getElementById('percentualSDR');
+            
+            // Elementos para impressão
+            const printTrimestre = document.getElementById('printTrimestre');
+            const printMeta = document.getElementById('printMeta');
+            const printTotalVendas = document.getElementById('printTotalVendas');
+            const printG1 = document.getElementById('printG1');
+            const printG2 = document.getElementById('printG2');
+            const printExec = document.getElementById('printExec');
+            const printSDR = document.getElementById('printSDR');
+            const printTotalGeral = document.getElementById('printTotalGeral');
             
             // Elementos de detalhes por gerente
             const vendasG1DetailElem = document.getElementById('vendasG1Detail');
@@ -496,8 +849,6 @@
             const sdrG2BreakdownElem = document.getElementById('sdrG2Breakdown');
             const sdrTotalBreakdownElem = document.getElementById('sdrTotalBreakdown');
             
-            const historicoBody = document.getElementById('historico-body');
-            
             // Objeto para armazenar o histórico por trimestre
             let historico = {
                 'T1': null,
@@ -505,6 +856,12 @@
                 'T3': null,
                 'T4': null
             };
+            
+            // Atualizar data do relatório
+            function atualizarDataRelatorio() {
+                const agora = new Date();
+                dataRelatorioElem.textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR');
+            }
             
             // Função para formatar valores em reais
             function formatarReal(valor) {
@@ -537,37 +894,90 @@
                 }
             }
             
-            // Função para atualizar o histórico na tabela
-            function atualizarHistoricoTabela() {
-                // Limpar a tabela
-                historicoBody.innerHTML = '';
+            // Função para atualizar o histórico com cards
+            function atualizarHistoricoCards() {
+                // Limpar os cards
+                historicoCards.innerHTML = '';
                 
-                // Adicionar cada trimestre ao histórico
+                let hasData = false;
+                
+                // Adicionar cada trimestre como card
                 for (const trimestre in historico) {
                     if (historico[trimestre]) {
+                        hasData = true;
                         const dados = historico[trimestre];
-                        const novaLinha = document.createElement('tr');
+                        const isCurrent = trimestre === trimestreSelect.value;
                         
-                        // Destacar a linha se for o trimestre atual
-                        if (trimestre === trimestreSelect.value) {
-                            novaLinha.classList.add('highlight');
-                        }
+                        const card = document.createElement('div');
+                        card.className = `trimestre-card ${isCurrent ? 'current' : ''}`;
                         
-                        novaLinha.innerHTML = `
-                            <td>${trimestre}</td>
-                            <td>${formatarReal(dados.meta)}</td>
-                            <td>${formatarReal(dados.vendasG1)}</td>
-                            <td>${formatarReal(dados.vendasG2)}</td>
-                            <td>${formatarReal(dados.comissaoG1)}</td>
-                            <td>${formatarReal(dados.comissaoG2)}</td>
-                            <td>${formatarReal(dados.comissaoExec)}</td>
-                            <td>${formatarReal(dados.comissaoSDR)}</td>
-                            <td>${formatarReal(dados.total)}</td>
+                        card.innerHTML = `
+                            <div class="trimestre-header">
+                                <div class="trimestre-title">${trimestre}</div>
+                                <div class="trimestre-meta">Meta: ${formatarReal(dados.meta)}</div>
+                            </div>
+                            
+                            <div class="vendas-info">
+                                <div class="gerente-vendas">
+                                    <div class="gerente-label">Gerente 1 - Vendas</div>
+                                    <div class="gerente-value">${formatarReal(dados.vendasG1)}</div>
+                                </div>
+                                <div class="gerente-vendas">
+                                    <div class="gerente-label">Gerente 2 - Vendas</div>
+                                    <div class="gerente-value">${formatarReal(dados.vendasG2)}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="comissao-info">
+                                <div class="comissao-item">
+                                    <div class="comissao-label">Comissão G1</div>
+                                    <div class="comissao-value">${formatarReal(dados.comissaoG1)}</div>
+                                </div>
+                                <div class="comissao-item">
+                                    <div class="comissao-label">Comissão G2</div>
+                                    <div class="comissao-value">${formatarReal(dados.comissaoG2)}</div>
+                                </div>
+                                <div class="comissao-item">
+                                    <div class="comissao-label">Executiva</div>
+                                    <div class="comissao-value">${formatarReal(dados.comissaoExec)}</div>
+                                </div>
+                                <div class="comissao-item">
+                                    <div class="comissao-label">SDR</div>
+                                    <div class="comissao-value">${formatarReal(dados.comissaoSDR)}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="total-card">
+                                <div class="total-label">TOTAL DO TRIMESTRE</div>
+                                <div class="total-value">${formatarReal(dados.total)}</div>
+                            </div>
                         `;
                         
-                        historicoBody.appendChild(novaLinha);
+                        historicoCards.appendChild(card);
                     }
                 }
+                
+                if (!hasData) {
+                    historicoCards.innerHTML = `
+                        <div class="empty-history">
+                            <div>📊</div>
+                            <p>Nenhum cálculo realizado ainda</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Os cálculos aparecerão aqui automaticamente</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Atualizar dados para impressão
+            function atualizarDadosImpressao(trimestre, meta, vendasG1, vendasG2, comissaoG1, comissaoG2, comissaoExec, comissaoSDR, totalGeral) {
+                printTrimestre.textContent = trimestre;
+                printMeta.textContent = formatarReal(meta);
+                printTotalVendas.textContent = formatarReal(vendasG1 + vendasG2);
+                printG1.textContent = `${formatarReal(comissaoG1.valor)} (${comissaoG1.percentual}%)`;
+                printG2.textContent = `${formatarReal(comissaoG2.valor)} (${comissaoG2.percentual}%)`;
+                printExec.textContent = formatarReal(comissaoExec);
+                printSDR.textContent = formatarReal(comissaoSDR);
+                printTotalGeral.textContent = formatarReal(totalGeral);
             }
             
             // Função principal de cálculo
@@ -630,6 +1040,9 @@
                 sdrG2BreakdownElem.textContent = `${comissaoEquipeG2.percentualSDR}% = ${formatarReal(comissaoEquipeG2.valorSDR)}`;
                 sdrTotalBreakdownElem.textContent = formatarReal(comissaoSDR);
                 
+                // Atualizar dados para impressão
+                atualizarDadosImpressao(trimestre, meta, vendasG1, vendasG2, comissaoG1, comissaoG2, comissaoExec, comissaoSDR, totalGeral);
+                
                 // Atualizar o histórico
                 historico[trimestre] = {
                     meta: meta,
@@ -642,12 +1055,52 @@
                     total: totalGeral
                 };
                 
-                // Atualizar a tabela de histórico
-                atualizarHistoricoTabela();
+                // Atualizar os cards do histórico
+                atualizarHistoricoCards();
             }
             
-            // Event listener para o botão de calcular
+            // Função para imprimir
+            function imprimirRelatorio() {
+                window.print();
+            }
+            
+            // Função para compartilhar
+            function compartilharRelatorio() {
+                const trimestre = trimestreSelect.value;
+                const meta = parseFloat(metaInput.value) || 0;
+                const vendasG1 = parseFloat(vendasG1Input.value) || 0;
+                const vendasG2 = parseFloat(vendasG2Input.value) || 0;
+                const totalVendas = vendasG1 + vendasG2;
+                
+                const textoCompartilhamento = `📊 Relatório de Comissões SP Data - ${trimestre}
+
+💰 Meta do Trimestre: ${formatarReal(meta)}
+📈 Total de Vendas: ${formatarReal(totalVendas)}
+👨‍💼 Gerente 1: ${formatarReal(vendasG1)}
+👩‍💼 Gerente 2: ${formatarReal(vendasG2)}
+💵 Total em Comissões: ${totalGeralElem.textContent}
+
+*Dados confidenciais - Uso interno*`;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Relatório de Comissões SP Data - ${trimestre}`,
+                        text: textoCompartilhamento,
+                        url: window.location.href
+                    })
+                    .catch(error => console.log('Erro ao compartilhar:', error));
+                } else {
+                    // Fallback para copiar para área de transferência
+                    navigator.clipboard.writeText(textoCompartilhamento)
+                        .then(() => alert('Relatório copiado para a área de transferência!'))
+                        .catch(() => alert('Texto para compartilhamento copiado manualmente:\n\n' + textoCompartilhamento));
+                }
+            }
+            
+            // Event listeners
             calcularBtn.addEventListener('click', calcularComissoes);
+            btnImprimir.addEventListener('click', imprimirRelatorio);
+            btnCompartilhar.addEventListener('click', compartilharRelatorio);
             
             // Calcular automaticamente quando os dados mudarem
             [metaInput, vendasG1Input, vendasG2Input].forEach(input => {
@@ -656,6 +1109,7 @@
             
             // Calcular comissões ao carregar a página
             calcularComissoes();
+            atualizarDataRelatorio();
         });
     </script>
 </body>
