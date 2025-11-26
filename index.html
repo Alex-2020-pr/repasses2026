@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Propostas Comerciais</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            background-color: #f1f8e9;
+            color: #333;
+            line-height: 1.4;
+            padding: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        h1 {
+            color: #128C7E;
+            font-size: 24px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #128C7E;
+            padding-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #e0f2e9;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: #128C7E;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-container, .preview-container, .history-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        .history-container {
+            grid-column: 1 / -1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #075E54;
+            font-size: 14px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #128C7E;
+        }
+        .btn-ia {
+            background: #7E57C2;
+            margin-top: 10px;
+        }
+        .btn-ia:hover {
+            background: #5E35B1;
+        }
+        .btn-secondary {
+            background: #78909C;
+        }
+        .btn-secondary:hover {
+            background: #546E7A;
+        }
+        .preview-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .preview-logo {
+            width: 120px;
+            height: 80px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .preview-title {
+            color: #128C7E;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .preview-content {
+            font-size: 12px;
+        }
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 11px;
+        }
+        .preview-table th {
+            background: #128C7E;
+            color: white;
+            text-align: left;
+            padding: 8px;
+            font-size: 12px;
+        }
+        .preview-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .history-item:hover {
+            background: #f1f8e9;
+        }
+        .history-client {
+            font-weight: 600;
+            color: #128C7E;
+        }
+        .history-date {
+            font-size: 12px;
+            color: #78909C;
+        }
+        .history-values {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .editor-btn {
+            padding: 6px 10px;
+            background: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #333333;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .editor-btn:hover {
+            background: #e9e9e9;
+            border-color: #999999;
+        }
+        .editor-btn.active {
+            background: #128C7E;
+            color: white;
+            border-color: #128C7E;
+        }
+        .editor-select {
+            padding: 6px 8px;
+            background: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #333333;
+            font-weight: 600;
+        }
+        #commercialNotes {
+            min-height: 100px;
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+        }
+        #commercialNotes ul, #commercialNotes ol {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+        #commercialNotes li {
+            margin-bottom: 2px;
+        }
+
+        /* ESTILOS PARA IMPRESSÃO DIRETA */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .preview-container, .preview-container * {
+                visibility: visible;
+            }
+            .preview-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                background: white;
+            }
+            .actions, header, .tabs, .form-container {
+                display: none !important;
+            }
+            .preview-logo img {
+                max-width: 100px;
+                max-height: 60px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .tab-content.active {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerador de Propostas Comerciais</h1>
+            <div>
+                <button class="btn-secondary" onclick="showTab('history')">Histórico de Propostas</button>
+            </div>
+        </header>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('generator')">Gerar Proposta</div>
+            <div class="tab" onclick="showTab('history')">Histórico</div>
+        </div>
+        <div id="generator" class="tab-content active">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="clientName">Nome do Cliente</label>
+                    <input type="text" id="clientName" placeholder="Ex: Instituto Paranaense de Saúde" value="Instituto Paranaense de Saúde Nossa Senhora de Fátima">
+                </div>
+                <div class="form-group">
+                    <label for="clientCity">Cidade/Estado do Cliente</label>
+                    <input type="text" id="clientCity" placeholder="Ex: Jandaia do Sul - PR" value="Jandaia do Sul - PR">
+                </div>
+                <div class="form-group">
+                    <label for="licensePrice">Preço da Licença (por conexão)</label>
+                    <input type="number" id="licensePrice" value="350">
+                </div>
+                <div class="form-group">
+                    <label for="numConnections">Número de Conexões Contratadas</label>
+                    <input type="number" id="numConnections" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="integrationPrice">Preço da Integração</label>
+                    <input type="number" id="integrationPrice" value="200">
+                </div>
+                <div class="form-group">
+                    <label for="researchPrice">Preço da Pesquisa de Satisfação</label>
+                    <input type="number" id="researchPrice" value="200">
+                </div>
+                <div class="form-group">
+                    <label for="implementationPrice">Preço da Implantação</label>
+                    <input type="number" id="implementationPrice" value="950">
+                </div>
+                <div class="form-group">
+                    <label for="additionalConnections">Preço de Conexões Adicionais</label>
+                    <input type="number" id="additionalConnections" value="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="commercialNotes">Observações Comerciais (Detalhes da Negociação)</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="editor-btn" onclick="formatText('bold')" title="Negrito"><b>B</b></button>
+                        <button type="button" class="editor-btn" onclick="formatText('italic')" title="Itálico"><i>I</i></button>
+                        <button type="button" class="editor-btn" onclick="formatText('underline')" title="Sublinhado"><u>S</u></button>
+                        <button type="button" class="editor-btn" onclick="formatText('insertUnorderedList')" title="Lista">•</button>
+                        <button type="button" class="editor-btn" onclick="formatText('insertOrderedList')" title="Lista numerada">1.</button>
+                    </div>
+                    <div id="commercialNotes" contenteditable="true" style="border: 1px solid #ddd; padding: 10px; border-radius: 4px; min-height: 100px; background: white;">Ex: Valores API Oficial Whatsapp:
+Utility (Exames, Confirmações) - R$0,13
+Marketing (Aniversário, Campanhas): R$0,99</div>
+                </div>
+                
+                <button onclick="updatePreview()">Gerar Proposta</button>
+                <button class="btn-ia" onclick="improveWithAI()">Melhorar com IA</button>
+            </div>
+            
+            <!-- CONTAINER DE PREVIEW QUE SERÁ USADO PARA PDF -->
+            <div class="preview-container" id="pdf-preview">
+                <div class="preview-header">
+                    <div class="preview-logo">
+                        <img src="am2logo5.jpg" alt="Logo AM2 Saúde" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display: none; color: #128C7E; font-weight: bold; text-align: center; padding: 10px;">
+                            LOGO<br>AM2<br>SAÚDE
+                        </div>
+                    </div>
+                    <div class="preview-title">Sistema de Multiatendentes WhatsApp</div>
+                    <div style="font-size: 11px;">Solução completa para atendimento simultâneo</div>
+                </div>
+                <div class="preview-content">
+                    <h2 style="font-size: 16px; color: #128C7E; margin: 10px 0; border-bottom: 1px solid #25D366; padding-bottom: 4px;">PROPOSTA COMERCIAL</h2>
+                    <div style="background: #f1f8e9; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 11px;">
+                        <p><strong>Destinatário:</strong> <span id="preview-client">Instituto Paranaense de Saúde Nossa Senhora de Fátima - Jandaia do Sul - PR</span></p>
+                        <p><strong>Data:</strong> <span id="current-date"></span> | <strong>Validade:</strong> <span id="expiry-date"></span></p>
+                    </div>
+                    <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">1. APRESENTAÇÃO</h3>
+                    <p>Sistema de Multiatendentes WhatsApp para melhorar a eficiência e organização da comunicação com clientes. Atendimento ágil, centralizado e integrado.</p>
+                    <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">2. BENEFÍCIOS</h3>
+                    <ul style="padding-left: 15px; margin: 5px 0; font-size: 11px;">
+                        <li>Atendimento Simultâneo - Múltiplos atendentes</li>
+                        <li>Histórico Centralizado - Todas interações registradas</li>
+                        <li>Distribuição Inteligente - Mensagens automáticas</li>
+                        <li>Pesquisa de Satisfação - NPS integrado</li>
+                        <li>Mensagens Ilimitadas</li>
+                        <li>Usuários Ilimitados</li>
+                    </ul>
+                    <div id="preview-commercial-notes-container" style="display: none; margin: 15px 0;">
+                        <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">4. OBSERVAÇÕES COMERCIAIS</h3>
+                        <div id="preview-commercial-notes" style="background: #fff3e0; padding: 10px; border-left: 4px solid #ff9800; border-radius: 4px; font-style: italic;"></div>
+                    </div>
+                    <h3 style="font-size: 14px; color: #075E54; margin: 8px 0;">3. INVESTIMENTO</h3>
+                    <table class="preview-table">
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                        </tr>
+                        <tbody id="investmentTableBody">
+                        </tbody>
+                    </table>
+                    <div style="background: #e8f5e9; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 11px;">
+                        <h3 style="font-size: 13px; margin: 5px 0;">INVESTIMENTO TOTAL ESTIMADO</h3>
+                        <p><strong>Exemplo para <span id="preview-num-connections-total">1</span> conexão(ões) + integrações:</strong></p>
+                        <div id="totalBreakdown">
+                        </div>
+                        <p><strong>Total Mensal: R$ <span id="preview-total">750</span>,00 /mês</strong></p>
+                        <p>Implantação: <strong>R$ <span id="preview-total-implementation">950</span>,00 (único)</strong></p>
+                    </div>
+                    <div style="text-align: center; background: #075E54; color: white; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 11px;">
+                        <h3 style="margin: 5px 0; font-size: 13px;">PRONTO PARA OTIMIZAR SEU ATENDIMENTO?</h3>
+                        <p>Entre em contato para agendar uma demonstração</p>
+                        <p><strong>comercial@am2saude.com.br | (45) 9 9990-1802</strong></p>
+                    </div>
+                </div>
+                <div style="text-align: center; padding: 8px; background: #073d36; color: white; border-radius: 0 0 4px 4px; margin: 15px -20px -20px -20px; font-size: 10px;">
+                    <p>Rua Sete de setembro, 2734, sala 21 - Cascavel - PR</p>
+                    <p>© <span id="current-year">2025</span> - Todos os direitos reservados</p>
+                    <p style="font-size: 9px; opacity: 0.7; margin-top: 4px;">v2025.04.03-1430</p>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button onclick="saveProposal()">Salvar Proposta</button>
+                <button onclick="generatePDF()">Imprimir / Gerar PDF</button>
+                <button class="btn-secondary" onclick="clearForm()">Nova Proposta</button>
+                <button class="btn-secondary" onclick="window.print()">Imprimir Direto</button>
+            </div>
+        </div>
+        <div id="history" class="tab-content">
+            <div class="history-container">
+                <h2>Histórico de Propostas</h2>
+                <p>Clique em uma proposta para visualizar ou recuperar os dados.</p>
+                <div class="history-list" id="historyList">
+                    <p id="emptyHistory">Nenhuma proposta salva ainda.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn-secondary" onclick="clearHistory()">Limpar Histórico</button>
+                    <button onclick="showTab('generator')">Voltar para Gerador</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelector(`.tab:nth-child(${tabId === 'generator' ? 1 : 2})`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            if (tabId === 'history') {
+                loadHistory();
+            }
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function formatDateTime(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+
+        const currentDate = new Date();
+        document.getElementById('current-date').textContent = formatDate(currentDate);
+        const expiryDate = new Date();
+        expiryDate.setDate(currentDate.getDate() + 30);
+        document.getElementById('expiry-date').textContent = formatDate(expiryDate);
+        document.getElementById('current-year').textContent = "2025";
+
+        function formatText(command, value = null) {
+            document.getElementById('commercialNotes').focus();
+            if (value) {
+                document.execCommand(command, false, value);
+            } else {
+                document.execCommand(command, false, null);
+            }
+        }
+
+        function updatePreview(suppressAlert = false) {
+            const clientName = document.getElementById('clientName').value;
+            const clientCity = document.getElementById('clientCity').value;
+            const licensePrice = parseInt(document.getElementById('licensePrice').value);
+            const integrationPrice = parseInt(document.getElementById('integrationPrice').value);
+            const researchPrice = parseInt(document.getElementById('researchPrice').value);
+            const implementationPrice = parseInt(document.getElementById('implementationPrice').value);
+            const additionalConnections = parseInt(document.getElementById('additionalConnections').value);
+            const numConnections = parseInt(document.getElementById('numConnections').value) || 1;
+            const commercialNotes = document.getElementById('commercialNotes').innerHTML.trim();
+
+            let totalLicenseCost = 0;
+            if (numConnections <= 5) {
+                totalLicenseCost = licensePrice * numConnections;
+            } else {
+                totalLicenseCost = (licensePrice * 5) + (additionalConnections * (numConnections - 5));
+            }
+            const totalMonthly = totalLicenseCost + integrationPrice + researchPrice;
+            
+            document.getElementById('preview-client').textContent = `${clientName} - ${clientCity}`;
+            document.getElementById('preview-num-connections-total').textContent = numConnections;
+
+            const tableBody = document.getElementById('investmentTableBody');
+            tableBody.innerHTML = '';
+
+            const licenseRow = document.createElement('tr');
+            licenseRow.innerHTML = `<td>Licença Mensal (por conexão)</td><td>R$ ${licensePrice},00 /mês</td>`;
+            tableBody.appendChild(licenseRow);
+
+            const additionalRow = document.createElement('tr');
+            additionalRow.innerHTML = `<td>Conexões Adicionais (a partir da 6ª)</td><td>R$ ${additionalConnections},00 /mês cada</td>`;
+            tableBody.appendChild(additionalRow);
+
+            if (integrationPrice > 0) {
+                const integrationRow = document.createElement('tr');
+                integrationRow.innerHTML = `<td>Integração com Sistema de Gestão</td><td>R$ ${integrationPrice},00 /mês</td>`;
+                tableBody.appendChild(integrationRow);
+            }
+
+            if (researchPrice > 0) {
+                const researchRow = document.createElement('tr');
+                researchRow.innerHTML = `<td>Pesquisa de Satisfação (NPS)</td><td>R$ ${researchPrice},00 /mês</td>`;
+                tableBody.appendChild(researchRow);
+            }
+
+            if (implementationPrice > 0) {
+                const implementationRow = document.createElement('tr');
+                implementationRow.innerHTML = `<td>Implantação (configuração inicial)</td><td>R$ ${implementationPrice},00 (único)</td>`;
+                tableBody.appendChild(implementationRow);
+            }
+
+            const totalBreakdown = document.getElementById('totalBreakdown');
+            totalBreakdown.innerHTML = '';
+
+            const licenseTotalItem = document.createElement('p');
+            licenseTotalItem.innerHTML = `Licença: <strong>R$ ${totalLicenseCost.toLocaleString('pt-BR')},00 /mês</strong>`;
+            totalBreakdown.appendChild(licenseTotalItem);
+
+            if (integrationPrice > 0) {
+                const integrationTotalItem = document.createElement('p');
+                integrationTotalItem.innerHTML = `Integração: <strong>R$ ${integrationPrice},00 /mês</strong>`;
+                totalBreakdown.appendChild(integrationTotalItem);
+            }
+
+            if (researchPrice > 0) {
+                const researchTotalItem = document.createElement('p');
+                researchTotalItem.innerHTML = `Pesquisa: <strong>R$ ${researchPrice},00 /mês</strong>`;
+                totalBreakdown.appendChild(researchTotalItem);
+            }
+
+            document.getElementById('preview-total').textContent = totalMonthly.toLocaleString('pt-BR');
+            document.getElementById('preview-total-implementation').textContent = implementationPrice;
+
+            const notesContainer = document.getElementById('preview-commercial-notes-container');
+            const notesContent = document.getElementById('preview-commercial-notes');
+            
+            if (commercialNotes && commercialNotes !== 'Ex: Valores API Oficial Whatsapp:<br>Utility (Exames, Confirmações) - R$0,13<br>Marketing (Aniversário, Campanhas): R$0,99') {
+                notesContent.innerHTML = commercialNotes;
+                notesContainer.style.display = 'block';
+            } else {
+                notesContainer.style.display = 'none';
+            }
+            
+            if (!suppressAlert) {
+                alert('Proposta atualizada com sucesso!');
+            }
+        }
+
+        function saveProposal() {
+            const clientName = document.getElementById('clientName').value;
+            if (!clientName) {
+                alert('Por favor, informe o nome do cliente antes de salvar.');
+                return;
+            }
+            const now = new Date();
+            const proposal = {
+                id: Date.now(),
+                date: now.toISOString(),
+                displayName: `${clientName} - ${formatDateTime(now)}`,
+                clientName: clientName,
+                clientCity: document.getElementById('clientCity').value,
+                licensePrice: document.getElementById('licensePrice').value,
+                integrationPrice: document.getElementById('integrationPrice').value,
+                researchPrice: document.getElementById('researchPrice').value,
+                implementationPrice: document.getElementById('implementationPrice').value,
+                additionalConnections: document.getElementById('additionalConnections').value,
+                numConnections: document.getElementById('numConnections').value,
+                commercialNotes: document.getElementById('commercialNotes').innerHTML
+            };
+            let history = JSON.parse(localStorage.getItem('proposalHistory')) || [];
+            history.unshift(proposal);
+            if (history.length > 50) {
+                history = history.slice(0, 50);
+            }
+            localStorage.setItem('proposalHistory', JSON.stringify(history));
+            alert(`Proposta para ${clientName} salva no histórico!`);
+        }
+
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            const emptyHistory = document.getElementById('emptyHistory');
+            const history = JSON.parse(localStorage.getItem('proposalHistory')) || [];
+            historyList.innerHTML = '';
+            if (history.length === 0) {
+                emptyHistory.style.display = 'block';
+                return;
+            }
+            emptyHistory.style.display = 'none';
+            history.forEach(proposal => {
+                const licensePrice = parseInt(proposal.licensePrice);
+                const additionalConnections = parseInt(proposal.additionalConnections);
+                const numConnections = parseInt(proposal.numConnections) || 1;
+                let totalLicenseCost = 0;
+                if (numConnections <= 5) {
+                    totalLicenseCost = licensePrice * numConnections;
+                } else {
+                    totalLicenseCost = (licensePrice * 5) + (additionalConnections * (numConnections - 5));
+                }
+                const total = totalLicenseCost + parseInt(proposal.integrationPrice) + parseInt(proposal.researchPrice);
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-client">${proposal.displayName}</div>
+                    <div class="history-values">Total: R$ ${total},00/mês + R$ ${proposal.implementationPrice},00 (implantação)</div>
+                `;
+                item.addEventListener('click', () => {
+                    if (confirm('Deseja carregar esta proposta?')) {
+                        loadProposal(proposal);
+                        showTab('generator');
+                    }
+                });
+                historyList.appendChild(item);
+            });
+        }
+
+        function loadProposal(proposal) {
+            document.getElementById('clientName').value = proposal.clientName;
+            document.getElementById('clientCity').value = proposal.clientCity;
+            document.getElementById('licensePrice').value = proposal.licensePrice;
+            document.getElementById('integrationPrice').value = proposal.integrationPrice;
+            document.getElementById('researchPrice').value = proposal.researchPrice;
+            document.getElementById('implementationPrice').value = proposal.implementationPrice;
+            document.getElementById('additionalConnections').value = proposal.additionalConnections;
+            document.getElementById('numConnections').value = proposal.numConnections || 1;
+            document.getElementById('commercialNotes').innerHTML = proposal.commercialNotes || 'Ex: Valores API Oficial Whatsapp:<br>Utility (Exames, Confirmações) - R$0,13<br>Marketing (Aniversário, Campanhas): R$0,99';
+            updatePreview();
+        }
+
+        function clearHistory() {
+            if (confirm('Tem certeza que deseja limpar todo o histórico?')) {
+                localStorage.removeItem('proposalHistory');
+                loadHistory();
+            }
+        }
+
+        function clearForm() {
+            if (confirm('Deseja criar uma nova proposta? Os dados atuais serão perdidos.')) {
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientCity').value = '';
+                document.getElementById('licensePrice').value = '350';
+                document.getElementById('numConnections').value = '1';
+                document.getElementById('integrationPrice').value = '200';
+                document.getElementById('researchPrice').value = '200';
+                document.getElementById('implementationPrice').value = '950';
+                document.getElementById('additionalConnections').value = '100';
+                document.getElementById('commercialNotes').innerHTML = 'Ex: Valores API Oficial Whatsapp:<br>Utility (Exames, Confirmações) - R$0,13<br>Marketing (Aniversário, Campanhas): R$0,99';
+                updatePreview(true);
+            }
+        }
+
+        function improveWithAI() {
+            alert('Recurso de IA em desenvolvimento.');
+            document.getElementById('clientName').value = "Instituto Paranaense de Saúde Nossa Senhora de Fátima - " + 
+                document.getElementById('clientName').value;
+            updatePreview();
+        }
+
+        function generatePDF() {
+            const clientName = document.getElementById('clientName').value;
+            const element = document.getElementById('pdf-preview');
+            
+            // Configurações otimizadas para A4
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: `Proposta_${clientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_${formatDate(currentDate).replace(/\//g, '-')}.pdf`,
+                image: { 
+                    type: 'jpeg', 
+                    quality: 0.98 
+                },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    width: 800,
+                    windowWidth: 800
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true
+                },
+                pagebreak: { mode: 'avoid-all' }
+            };
+
+            // Adicionar estilos específicos para PDF
+            const originalStyles = element.getAttribute('style') || '';
+            element.style.width = '190mm';
+            element.style.margin = '0 auto';
+            element.style.padding = '10mm';
+            element.style.boxSizing = 'border-box';
+            element.style.fontSize = '11px';
+            element.style.lineHeight = '1.2';
+
+            alert('Gerando PDF... Aguarde alguns segundos.');
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restaurar estilos originais
+                element.setAttribute('style', originalStyles);
+            }).catch(error => {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF. Tente usar a opção "Imprimir Direto".');
+                element.setAttribute('style', originalStyles);
+            });
+        }
+
+        // Verificar se o logo carrega corretamente
+        window.addEventListener('load', function() {
+            const logo = document.querySelector('.preview-logo img');
+            if (logo) {
+                logo.onerror = function() {
+                    this.style.display = 'none';
+                    const fallback = this.nextElementSibling;
+                    if (fallback) {
+                        fallback.style.display = 'block';
+                    }
+                };
+                
+                // Verificar se a imagem carregou
+                if (logo.complete && logo.naturalHeight === 0) {
+                    logo.style.display = 'none';
+                    const fallback = logo.nextElementSibling;
+                    if (fallback) {
+                        fallback.style.display = 'block';
+                    }
+                }
+            }
+            
+            updatePreview(true);
+        });
+    </script>
+</body>
+</html>
