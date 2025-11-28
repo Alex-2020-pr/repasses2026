@@ -781,8 +781,8 @@
                         <li>Se as vendas forem iguais ou superiores a R$ 50.000: 5% de comissão sobre as vendas</li>
                     </ul>
                 </li>
-                <li><strong>Executiva de Contas:</strong> Recebe 2% sobre as vendas de cada gerente</li>
-                <li><strong>SDR:</strong> Recebe 1% sobre as vendas de cada gerente</li>
+                <li><strong>Executiva de Contas:</strong> Recebe 1% sobre as vendas de cada gerente</li>
+                <li><strong>SDR:</strong> Recebe 0,5% sobre as vendas de cada gerente</li>
             </ul>
         </div>
         
@@ -886,10 +886,10 @@
                     return { percentualExec: 0, valorExec: 0, percentualSDR: 0, valorSDR: 0 };
                 } else {
                     return { 
-                        percentualExec: 2, 
-                        valorExec: vendas * 0.02, 
-                        percentualSDR: 1, 
-                        valorSDR: vendas * 0.01 
+                        percentualExec: 1, // Alterado de 2% para 1%
+                        valorExec: vendas * 0.01, 
+                        percentualSDR: 0.5, // Alterado de 1% para 0,5%
+                        valorSDR: vendas * 0.005 
                     };
                 }
             }
