@@ -220,6 +220,7 @@
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
         
         .trimestre-card:hover {
@@ -415,6 +416,98 @@
             display: none;
         }
         
+        /* Botão de excluir no histórico */
+        .btn-excluir {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            opacity: 0.7;
+        }
+        
+        .btn-excluir:hover {
+            background-color: #c0392b;
+            opacity: 1;
+        }
+        
+        /* Modal de confirmação */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .modal p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .modal-btn.confirm {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .modal-btn.confirm:hover {
+            background-color: #c0392b;
+        }
+        
+        .modal-btn.cancel {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .modal-btn.cancel:hover {
+            background-color: #7f8c8d;
+        }
+        
         /* Estilos para impressão */
         @media print {
             @page {
@@ -457,7 +550,7 @@
             }
             
             .button-group, button, .confidential, .explanation, 
-            .gerente-details, .commission-details, .form-grid {
+            .gerente-details, .commission-details, .form-grid, .btn-excluir {
                 display: none !important;
             }
             
@@ -594,6 +687,10 @@
             
             button {
                 width: 100%;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -798,6 +895,18 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação para exclusão -->
+    <div id="modalExcluir" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir o cálculo do trimestre <span id="trimestreExcluir"></span>?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" id="confirmarExcluir">Sim, Excluir</button>
+                <button class="modal-btn cancel" id="cancelarExcluir">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calcularBtn = document.getElementById('calcular');
@@ -809,6 +918,12 @@
             const vendasG2Input = document.getElementById('vendasG2');
             const dataRelatorioElem = document.getElementById('dataRelatorio');
             const historicoCards = document.getElementById('historico-cards');
+            
+            // Elementos do modal
+            const modalExcluir = document.getElementById('modalExcluir');
+            const trimestreExcluirElem = document.getElementById('trimestreExcluir');
+            const confirmarExcluirBtn = document.getElementById('confirmarExcluir');
+            const cancelarExcluirBtn = document.getElementById('cancelarExcluir');
             
             // Elementos de resultado
             const comissaoG1Elem = document.getElementById('comissaoG1');
@@ -856,6 +971,9 @@
                 'T3': null,
                 'T4': null
             };
+            
+            // Variável para controlar qual trimestre será excluído
+            let trimestreParaExcluir = null;
             
             // Atualizar data do relatório
             function atualizarDataRelatorio() {
@@ -912,6 +1030,7 @@
                         card.className = `trimestre-card ${isCurrent ? 'current' : ''}`;
                         
                         card.innerHTML = `
+                            <button class="btn-excluir" data-trimestre="${trimestre}">×</button>
                             <div class="trimestre-header">
                                 <div class="trimestre-title">${trimestre}</div>
                                 <div class="trimestre-meta">Meta: ${formatarReal(dados.meta)}</div>
@@ -965,6 +1084,36 @@
                             <p style="font-size: 0.9rem; margin-top: 10px;">Os cálculos aparecerão aqui automaticamente</p>
                         </div>
                     `;
+                }
+                
+                // Adicionar event listeners aos botões de excluir
+                document.querySelectorAll('.btn-excluir').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const trimestre = this.getAttribute('data-trimestre');
+                        abrirModalExclusao(trimestre);
+                    });
+                });
+            }
+            
+            // Função para abrir modal de exclusão
+            function abrirModalExclusao(trimestre) {
+                trimestreParaExcluir = trimestre;
+                trimestreExcluirElem.textContent = trimestre;
+                modalExcluir.style.display = 'flex';
+            }
+            
+            // Função para fechar modal de exclusão
+            function fecharModalExclusao() {
+                modalExcluir.style.display = 'none';
+                trimestreParaExcluir = null;
+            }
+            
+            // Função para excluir trimestre do histórico
+            function excluirTrimestre() {
+                if (trimestreParaExcluir) {
+                    historico[trimestreParaExcluir] = null;
+                    atualizarHistoricoCards();
+                    fecharModalExclusao();
                 }
             }
             
@@ -1101,6 +1250,17 @@
             calcularBtn.addEventListener('click', calcularComissoes);
             btnImprimir.addEventListener('click', imprimirRelatorio);
             btnCompartilhar.addEventListener('click', compartilharRelatorio);
+            
+            // Event listeners para o modal
+            confirmarExcluirBtn.addEventListener('click', excluirTrimestre);
+            cancelarExcluirBtn.addEventListener('click', fecharModalExclusao);
+            
+            // Fechar modal ao clicar fora dele
+            modalExcluir.addEventListener('click', function(e) {
+                if (e.target === modalExcluir) {
+                    fecharModalExclusao();
+                }
+            });
             
             // Calcular automaticamente quando os dados mudarem
             [metaInput, vendasG1Input, vendasG2Input].forEach(input => {
